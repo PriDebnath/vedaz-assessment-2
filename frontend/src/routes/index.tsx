@@ -15,12 +15,12 @@ function RootComponent() {
     if (!token) {
       clearToken(); // clear token
 
-      if(isTokenExpired(token)){
-       toast.info( "Your session has expired. Please sign in again.",toastConfig);   
-      }else{
-   toast.info( "Please sign in to continue. Redirecting...", toastConfig  );
+      if (isTokenExpired(token)) {
+        toast.info("Your session has expired. Please sign in again.", toastConfig);
+      } else {
+        toast.info("Please sign in to continue. Redirecting...", toastConfig);
       }
-    
+
       navigate({
         to: "/auth/sign-in",
         replace: true,
@@ -29,7 +29,9 @@ function RootComponent() {
   }, [token, navigate, clearToken]);
 
   if (!token || isTokenExpired(token)) {
-    return null;
+    if (!token || isTokenExpired(token)) {
+      return <div>Redirecting...</div>;
+    }
   }
 
   return <ChatPage />;
