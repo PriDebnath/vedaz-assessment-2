@@ -23,16 +23,13 @@ function RootComponent() {
 
       navigate({
         to: "/auth/sign-in",
-        replace: true,
       });
     }
   }, [token, navigate, clearToken]);
 
-  if (!token || isTokenExpired(token)) {
     if (!token || isTokenExpired(token)) {
       return <div>Redirecting...</div>;
     }
-  }
 
   return <ChatPage />;
 }
