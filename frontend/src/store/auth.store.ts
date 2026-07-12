@@ -10,7 +10,7 @@ type Store = {
 
 const store = create<Store>()
 
-const key = "token"
+const key = "vedaz-assessment-2-token"
 
 export const useAuthStore = store(
     persist(
