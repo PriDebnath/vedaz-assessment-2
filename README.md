@@ -9,6 +9,8 @@ made by Pritam Debnath
 - Send messages other user
 - Fetch chat history
 - Real-Time Communication 
+- Online/offline user status.
+
 ---
 
 ## 🔴 Demo

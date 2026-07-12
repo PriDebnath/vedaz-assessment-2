@@ -117,9 +117,9 @@ export default function Chat({
                           : "border bg-background"
                       }`}
                     >
-                      <p>{msg.text}</p>
+                      <p className="text-lg">{msg.text}</p>
 
-                      <p className="mt-1 text-right text-[10px] opacity-60">
+                      <p className="mt-1 font-bold text-right text-[10px] opacity-80">
                         {new Date(
                           msg.createdAt,
                         ).toLocaleTimeString([], {
