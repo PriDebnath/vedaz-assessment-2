@@ -43,23 +43,31 @@ export const connectSocket = (server: HttpServer) => {
             io.emit(env.VITE_SOCKET_STATUS_EVENT_NAME, [...onlineUsers.keys()]);
         }, 500);
 
-        socket.on(env.VITE_SOCKET_MESSAGE_EVENT_NAME, async (data) => {
-            const { receiverId, senderId } = data
-        console.debug("new message by id: ", senderId)
-            const receiverSocket = onlineUsers.get(receiverId);
-            if (receiverSocket) {
-                io.to(receiverSocket)
-                    .emit(
-                        env.VITE_SOCKET_MESSAGE_EVENT_NAME,
-                        data
-                    );
+     socket.on(env.VITE_SOCKET_MESSAGE_EVENT_NAME, async (data) => {
+    const parsed = await createMessageShema.parseAsync(data);
 
-                // validate message 
-                const parsedData = await createMessageShema.parseAsync(data)
-                // save messages in db
-                db.insert(table.messages).values(parsedData)
-            }
-        });
+    const [savedMessage] = await db
+        .insert(table.messages)
+        .values(parsed)
+        .returning();
+        console.debug( {parsed, savedMessage})
+
+    // sender
+    socket.emit(
+        env.VITE_SOCKET_MESSAGE_EVENT_NAME,
+        savedMessage,
+    );
+
+    // receiver
+    const receiverSocket = onlineUsers.get(savedMessage.receiverId);
+
+    if (receiverSocket) {
+        io.to(receiverSocket).emit(
+            env.VITE_SOCKET_MESSAGE_EVENT_NAME,
+            savedMessage,
+        );
+    }
+});
 
 
 

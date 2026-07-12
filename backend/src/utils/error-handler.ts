@@ -6,6 +6,7 @@ export const errorHandler = (param: {
     response: Response,
 }) => {
     const { error, response } = param
+    console.error("Sending error response...");
     
     if (error instanceof ZodError) {
         return response.status(400).json({

@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import type { User } from "../hook/use-get-users.hook";
+
 import Chat from "./chat";
+
+import type { User } from "../hook/use-get-users.hook";
 
 import {
   Dialog,
@@ -14,12 +16,19 @@ interface Props {
   currentUser: User;
 }
 
-function UserChatDialog({ user, currentUser }: Props) {
-  return (
-    <Dialog>
-      <DialogTrigger render={
+function UserChatDialog({
+  user,
+  currentUser,
+}: Props) {
+  const [open, setOpen] = useState(false);
 
-          <button className="flex w-full items-center gap-4 rounded-lg px-4 py-3 transition hover:bg-muted">
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <DialogTrigger render={
+              <button className="flex w-full items-center gap-4 rounded-lg px-4 py-3 transition hover:bg-muted">
           <div className="relative">
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">
               {user.name[0].toUpperCase()}
@@ -34,11 +43,12 @@ function UserChatDialog({ user, currentUser }: Props) {
 
           <div className="flex-1 text-left">
             <p className="font-medium">{user.name}</p>
+
             <p className="text-sm text-muted-foreground">
               {user.active ? "Online" : "Offline"}
             </p>
           </div>
-        </button>    
+        </button>
       }>
   
       </DialogTrigger>
@@ -50,6 +60,7 @@ function UserChatDialog({ user, currentUser }: Props) {
           transition={{ duration: 0.2 }}
         >
           <Chat
+            open={open}
             user={user}
             currentUser={currentUser}
           />

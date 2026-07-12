@@ -2,38 +2,33 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SendHorizontal } from "lucide-react";
 
-import { socket } from "@/lib/socket-io";
-import { env } from "@/enviroments/env";
+import { useChat } from "../hook/use-chat";
+import { useGetMessages } from "../hook/use-get-messages.hook";
 
 import type { User } from "../hook/use-get-users.hook";
-
-type Message = {
-  text: string;
-  senderId: number;
-  receiverId: number;
-  timestamp: string;
-};
+import type { Message } from "../types";
 
 interface Props {
   user: User;
   currentUser: User;
+  open: boolean;
 }
 
-export default function Chat({ user, currentUser }: Props) {
+export default function Chat({
+  user,
+  currentUser,
+  open,
+}: Props) {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    socket.on(env.VITE_SOCKET_MESSAGE_EVENT_NAME, (msg: Message) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+  const { messages, isPending } = useGetMessages(
+    user.id,
+    open,
+  );
 
-    return () => {
-      socket.off(env.VITE_SOCKET_MESSAGE_EVENT_NAME);
-    };
-  }, []);
+  const { sendMessage } = useChat(currentUser.id);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
@@ -41,19 +36,16 @@ export default function Chat({ user, currentUser }: Props) {
     });
   }, [messages]);
 
-  function sendMessage() {
-    if (!message.trim()) return;
+  function handleSend() {
+    const text = message.trim();
 
-    const msg: Message = {
-      text: message,
+    if (!text) return;
+
+    sendMessage({
       senderId: currentUser.id,
       receiverId: user.id,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-
-    socket.emit(env.VITE_SOCKET_MESSAGE_EVENT_NAME, msg);
-
-    setMessages((prev) => [...prev, msg]);
+      text,
+    });
 
     setMessage("");
   }
@@ -70,13 +62,16 @@ export default function Chat({ user, currentUser }: Props) {
 
             <span
               className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background ${
-                user.active ? "bg-green-500" : "bg-gray-400"
+                user.active
+                  ? "bg-green-500"
+                  : "bg-gray-400"
               }`}
             />
           </div>
 
           <div>
             <h2 className="font-semibold">{user.name}</h2>
+
             <p className="text-sm text-muted-foreground">
               {user.active ? "Online" : "Offline"}
             </p>
@@ -86,39 +81,64 @@ export default function Chat({ user, currentUser }: Props) {
 
       {/* Messages */}
       <div className="flex-1 space-y-3 overflow-y-auto bg-muted/20 p-5">
-        <AnimatePresence>
-          {messages.map((msg, index) => {
-            const mine = msg.senderId === currentUser.id;
+        {isPending ? (
+          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+            Loading messages...
+          </div>
+        ) : (
+          <>
+            <AnimatePresence>
+              {messages.map((msg) => {
+                const mine =
+                  msg.senderId === currentUser.id;
 
-            return (
-              <motion.div
-                key={index}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${
-                  mine ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-[70%] rounded-2xl px-4 py-3 ${
-                    mine
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-background border"
-                  }`}
-                >
-                  <p>{msg.text}</p>
+                return (
+                  <motion.div
+                    key={msg.id}
+                    layout
+                    initial={{
+                      opacity: 0,
+                      y: 10,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    className={`flex ${
+                      mine
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                        mine
+                          ? "bg-primary text-primary-foreground"
+                          : "border bg-background"
+                      }`}
+                    >
+                      <p>{msg.text}</p>
 
-                  <p className="mt-1 text-right text-[10px] opacity-60">
-                    {msg.timestamp}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+                      <p className="mt-1 text-right text-[10px] opacity-60">
+                        {new Date(
+                          msg.createdAt,
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+              {
+                messages?.length == 0  &&( <p className="text-center">No messages...</p>)
+              }
+            </AnimatePresence>
 
-        <div ref={bottomRef} />
+            <div ref={bottomRef} />
+          </>
+        )}
       </div>
 
       {/* Input */}
@@ -128,16 +148,20 @@ export default function Chat({ user, currentUser }: Props) {
             className="flex-1 rounded-full border bg-muted px-5 py-3 outline-none focus:ring-2 focus:ring-primary"
             placeholder="Type a message..."
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) =>
+              setMessage(e.target.value)
+            }
             onKeyDown={(e) => {
-              if (e.key === "Enter") sendMessage();
+              if (e.key === "Enter") {
+                handleSend();
+              }
             }}
           />
 
           <motion.button
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.9 }}
-            onClick={sendMessage}
+            onClick={handleSend}
             className="rounded-full bg-primary p-3 text-primary-foreground"
           >
             <SendHorizontal size={18} />

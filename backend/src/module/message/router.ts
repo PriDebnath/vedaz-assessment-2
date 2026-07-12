@@ -12,6 +12,6 @@ const router =  Router()
  *       200:
  *         description: success
  */
-router.get("/",validateJwt, getMessagesController )
+router.get("/:receiverId",validateJwt, getMessagesController )
    
 export { router }
