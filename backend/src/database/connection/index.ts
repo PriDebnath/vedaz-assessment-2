@@ -6,7 +6,10 @@ import { env } from "../../utils/load-env"
 import * as schema from "../model/index"
 
 export const pool = new Pool({
-connectionString:  env.PG_DATABASE_URL
+connectionString:  env.PG_DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 })
 
 export const db = drizzle(pool, { schema: schema})

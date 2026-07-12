@@ -7,7 +7,6 @@ dotenv.config({
 });
 
 const envSchema = z.object({
-    REDIS_URL: z.string().optional(),
     PORT: z.coerce.number().default(8000),
     PG_DATABASE_URL: z.string().min(1, "PG_DATABASE_URL is required"),
     VITE_SOCKET_STATUS_EVENT_NAME: z.string().min(1, "VITE_SOCKET_STATUS_EVENT_NAME is required"),

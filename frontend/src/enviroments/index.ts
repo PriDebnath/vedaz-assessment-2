@@ -4,7 +4,7 @@ let BASE_API_URL: string;
 
 switch (import.meta.env.MODE) {
   case "github":
-    BASE_API_URL = "";
+    BASE_API_URL = "https://vedaz-assessment-2-backend.onrender.com";
     break;
 
   default:
