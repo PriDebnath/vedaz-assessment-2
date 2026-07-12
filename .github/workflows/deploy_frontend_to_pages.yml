@@ -36,6 +36,11 @@ jobs:
           pnpm install
 
       - name: Build frontend
+        env:
+          PORT: 8000
+          PG_DATABASE_URL: ${{ secrets.PG_DATABASE_URL }}
+          VITE_SOCKET_STATUS_EVENT_NAME: "status-event"
+          VITE_SOCKET_MESSAGE_EVENT_NAME: "message-event"        
         run: |
           cd frontend
           npm run build:github
@@ -51,5 +56,3 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-
- 
