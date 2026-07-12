@@ -15,6 +15,10 @@ made by Pritam Debnath
 
 ## 🔴 Demo
 
+### 🔴 ↗️ Link
+https://pridebnath.github.io/vedaz-assessment-2
+
+
 ### 🔴 🖼️ Screenshot
 
 <div style="display: flex; justify-content: space-around;">
@@ -25,13 +29,15 @@ made by Pritam Debnath
 
 ### 🔴 🎥 Video
 
+##### Real-Time Communication 
+https://github.com/user-attachments/assets/94f08c9c-ba12-4bb9-9687-5ae3fc408ecc
 
-https://github.com/user-attachments/assets/8
+##### Fetch chat history
 
-⬇️ <a href="f.mp4" download="f.mp4">
+
+⬇️ <a href="frontend/public/videos/vedaz-assessment-2026-07-02-19-24-46.mp4" download="frontend/public/videos/vedaz-assessment-2026-07-02-19-24-46.mp4">
   Download Demo Video
 </a>
-
 
 
 ---
@@ -84,5 +90,6 @@ cd backend
 npm run dev
 ```
 ## Environment variables.
-create a `.env` file with the content of `.env.example` file
+
+#### create a `.env` file with the content of `.env.example` file
 ---
