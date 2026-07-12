@@ -28,5 +28,13 @@ export function parseJwt(token: string) {
     }
 }
 
- 
+ export const isTokenExpired = (token: string) => {
+  try {
+    const payload = parseJwt(token);
+
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true; // invalid token
+  }
+};
 

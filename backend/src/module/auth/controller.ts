@@ -30,7 +30,9 @@ export const signInController = async (req: Request, res:Response)=>{
             const passwordMatched = await bcryptjs.compare(data.password, existingUser.password)
         if (passwordMatched) {
             const {password, ...user} = existingUser
-            const token = jwt.sign(user, JWT_KEY,{expiresIn: 60 * 1000})
+            const token = jwt.sign(user, JWT_KEY,{
+                expiresIn: 7 * 24*  60 * 60 // seconds
+            })
             res.status(200).json({token})
         }else{
             res.status(400).send(errorMessage)

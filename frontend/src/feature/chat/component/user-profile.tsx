@@ -10,12 +10,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import type { User } from "../hook/use-get-users.hook";
+import { useAuthStore } from "@/store/auth.store";
 
 function UserProfile({ user }: { user: User }) {
   const navigate = useNavigate();
+  const {  clearToken } = useAuthStore();
 
   const logout = () => {
-    localStorage.removeItem("token");
+    clearToken();
     navigate({ to: "/auth/sign-in" });
   };
 
