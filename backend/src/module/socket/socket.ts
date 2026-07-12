@@ -4,6 +4,9 @@ import { Server } from "socket.io";
 import http from "http";
 import { JWT_KEY } from "../../utils/jwt";
 import { env } from "../../utils/load-env";
+import { db } from "../../database/connection";
+import { table } from "../../database/model";
+import { createMessageShema } from "../message/schema";
 
 type HttpServer = http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
 
@@ -32,22 +35,29 @@ export const connectSocket = (server: HttpServer) => {
 
         const user = socket.data.user;
         onlineUsers.set(user.id, socket.id);
-        
+
         setTimeout(() => { // send status after some time
             io.emit(env.VITE_SOCKET_STATUS_EVENT_NAME, [...onlineUsers.keys()]);
         }, 500);
-        
+
         socket.on(env.VITE_SOCKET_MESSAGE_EVENT_NAME, async (data) => {
-            const {receiverId, } = data            
+            const { receiverId, } = data
             const receiverSocket = onlineUsers.get(receiverId);
             if (receiverSocket) {
                 io.to(receiverSocket)
-                .emit(
-                    env.VITE_SOCKET_MESSAGE_EVENT_NAME, 
-                    data
-                );
+                    .emit(
+                        env.VITE_SOCKET_MESSAGE_EVENT_NAME,
+                        data
+                    );
+
+                // validate message 
+                const parsedData = await createMessageShema.parseAsync(data)
+                // save messages in db
+                db.insert(table.messages).values(parsedData)
             }
         });
+
+
 
         socket.on("disconnect", () => {
             onlineUsers.delete(user.id);

@@ -6,6 +6,7 @@ import { router as routerAuth } from "./module/auth/router";
 import { router as routerUsers} from "./module/user/router";
 import { swaggerUiApp } from "./utils/config/swagger.config";
 import {  rateLimit } from "./utils/config/rate-limiter.config";
+import { router as routerMessages} from "./module/message/router";
 
 const app: Express = express()
 
@@ -18,8 +19,9 @@ app.use(rateLimit);
 app.use("/docs", swaggerUi.serve, swaggerUiApp);
 
 // Routers
-app.use("/api/v1/users", routerUsers);
 app.use("/api/v1/auth", routerAuth);
+app.use("/api/v1/users", routerUsers);
+app.use("/api/v1/messages", routerMessages);
 
 app.get("/", (req, res) => {
     res.send({ message: "🟩 Server is up and running" })
