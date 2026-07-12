@@ -12,13 +12,10 @@ export const getMessagesController = async (req: Request, res: Response) => {
             senderId: currentUserId,
             receiverId: Number(receiverId)
         }
-        console.log({query,p: req.params});
 
         const parsedData = await getMessageSchema.parseAsync(query)
-        console.log({parsedData});
 
         const messages = await getMessages(parsedData)
-        console.log({messages});
         
         res.status(200).json(messages)
     } catch (error) {
