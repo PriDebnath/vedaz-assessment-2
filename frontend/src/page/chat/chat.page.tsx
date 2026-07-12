@@ -1,4 +1,4 @@
-import UserChat from "@/feature/chat/component/user-chat";
+import UserProfile from "@/feature/chat/component/user-profile";
 import type { User } from "@/feature/chat/hook/use-get-users.hook";
 import { parseJwt } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
@@ -60,7 +60,7 @@ function ChatPage() {
       <div className="flex w-full justify-between ">
         <div className="w-full"></div>
         <div className="border whitespace-nowrap rounded-xl m-2">
-          <UserChat user={{ ...currentUser, active: true }} />
+          <UserProfile user={{ ...currentUser, active: true }} />
         </div>
       </div>
 

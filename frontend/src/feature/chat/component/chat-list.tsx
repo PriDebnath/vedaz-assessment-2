@@ -1,7 +1,6 @@
 import React from "react";
 import UserChatDialog from "./user-chat-dialog";
 import type { User } from "@/feature/chat/hook/use-get-users.hook";
-import UserChat from "./user-chat";
 
 interface Props {
     users: User[];
@@ -28,13 +27,7 @@ function UserList({ users, currentUser }: Props) {
                         return null
                     }
                     return (
-                        user.active ? (
                             <UserChatDialog currentUser={currentUser} user={user} key={user.id} />
-                        ) : (
-                            <div className="opacity-50" key={user.id}>
-                                <UserChat user={user} />
-                            </div>
-                        )
                     )
                 }
                 )

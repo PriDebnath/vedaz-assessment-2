@@ -7,6 +7,7 @@ import { env } from "../../utils/load-env";
 import { db } from "../../database/connection";
 import { table } from "../../database/model";
 import { createMessageShema } from "../message/schema";
+import { logger } from "../../utils/config/logger.config";
 
 type HttpServer = http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
 
@@ -34,6 +35,8 @@ export const connectSocket = (server: HttpServer) => {
     io.on("connection", (socket) => {
 
         const user = socket.data.user;
+
+        console.debug("new connection ", user?.email)
         onlineUsers.set(user.id, socket.id);
 
         setTimeout(() => { // send status after some time
@@ -41,7 +44,8 @@ export const connectSocket = (server: HttpServer) => {
         }, 500);
 
         socket.on(env.VITE_SOCKET_MESSAGE_EVENT_NAME, async (data) => {
-            const { receiverId, } = data
+            const { receiverId, senderId } = data
+        console.debug("new message by id: ", senderId)
             const receiverSocket = onlineUsers.get(receiverId);
             if (receiverSocket) {
                 io.to(receiverSocket)
